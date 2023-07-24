@@ -1,4 +1,4 @@
- var songs = [
+var songs = [
     {
         name: 'Rồi ta sẽ ngắm pháo hoa cùng nhau',
         singer: 'Olew',
