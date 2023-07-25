@@ -1,3 +1,5 @@
+const cd = document.querySelector('.cd')
+
 const app = {
     currentIndex: 0,
     //lưu trữ bài hát
@@ -64,6 +66,7 @@ const app = {
         
     ],
 
+
     //render bài hát vào html để hiển thị lên
     render: function() {
         
@@ -81,12 +84,29 @@ const app = {
             </div>
             `
         });
-        document.querySelector('.playlist').innerHTML = htmls.join('') 
+        document.querySelector('.playlist').innerHTML = htmls.join('');
+    },
+
+    handleEvents: function() {
+        const cdWidth = cd.offsetWidth;
+        //scroll top
+        document.onscroll = function() {
+            const scrollScreen = document.documentElement.scrollTop;
+            const newcdWidth = cdWidth - scrollScreen;
+            cd.style.width = newcdWidth > 0 ? newcdWidth + "px" : 0;
+            cd.style.opacity = newcdWidth / cdWidth;
+        }
+
+        //play song
+        
+
     },
 
     //chạy các hàm đã khởi tạo
     start: function() {
         this.render();
+
+        this.handleEvents();
     }
 }
 app.start()
