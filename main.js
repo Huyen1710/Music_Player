@@ -8,10 +8,13 @@ const btnNext = document.querySelector('.btn-next')
 const btnPrev = document.querySelector('.btn-prev')
 const progressTrack = document.querySelector('#progress')
 const randomSong = document.querySelector('.btn-random')
+const repeatSong = document.querySelector('.btn-repeat')
 
 const app = {
     currentIndex: 0,
     isPlaying: false,
+    isRandom: false,
+    isRepeat: false,
     //lưu trữ bài hát
     songs: [
         {
@@ -178,12 +181,16 @@ const app = {
         }
 
         //xử lý khi hết bài hát
-        audio.onended = function() {
-            if (audio.ended) {
-                songNext();
-            }
+        audio.addEventListener('ended', function() {
+            _this.songNext();
+            audio.play();
+        })
+
+        // xử lý khi ấn random
+        randomSong.onclick = function() {
             
         }
+        
     },
 
     defineProperties: function () {
@@ -203,7 +210,6 @@ const app = {
 
     // next bài hát
     songNext: function() {
-        
         if (this.currentIndex == this.songs.length-1) {
             this.currentIndex = 0;
         } else{
@@ -221,6 +227,18 @@ const app = {
         this.loadCurrentSong();
     },
 
+    // random bài hát
+    playRandomSong: function() {
+        const randomIndex = Math.floor(Math.random() * this.songs.length);
+        this.currentIndex = randomIndex;
+        this.loadCurrentSong();
+    },
+
+    loadConfig: function () {
+        this.isRandom = this.config.isRandom;
+        this.isRepeat = this.config.isRepeat;
+      },
+
     //chạy các hàm đã khởi tạo
     start: function() {
         this.defineProperties();
@@ -230,6 +248,10 @@ const app = {
         this.render();
 
         this.handleEvents();
+
+        this.loadConfig();
+
     }
 }
+
 app.start()
