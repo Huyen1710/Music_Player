@@ -168,6 +168,7 @@ const app = {
                 _this.songNext();
             };
             audio.play();
+            _this.scrollToActiveSong();
         }
 
         //xử lý khi nhấn prev
@@ -180,6 +181,8 @@ const app = {
                 _this.songNext();
             };
             audio.play();
+            _this.scrollToActiveSong();
+
         }
 
         //xử lý thanh progress
@@ -204,8 +207,8 @@ const app = {
                 //audio.play();
             } if(_this.isRepeat) {
                 _this.playRepeatSong();
-            } if(_this.isRandom && _this.isRepeat) {
-                _this.playRepeatSong();
+            // } if(_this.isRandom && _this.isRepeat) {
+            //     _this.playRepeatSong();
             } else {
                 _this.songNext();
             };
@@ -309,6 +312,15 @@ const app = {
         this.isRepeat = this.config.isRepeat;
     },
 
+    scrollToActiveSong: function () {
+        setTimeout(() => {
+          $(".song.active").scrollIntoView({
+            behavior: "smooth",
+            block: "nearest"
+          });
+        }, 300);
+    },
+
     //chạy các hàm đã khởi tạo
     start: function() {
         this.defineProperties();
@@ -320,6 +332,8 @@ const app = {
         this.handleEvents();
 
         this.loadConfig();
+
+        this.scrollToActiveSong();
 
     }
 }
