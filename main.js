@@ -9,12 +9,14 @@ const btnPrev = document.querySelector('.btn-prev')
 const progressTrack = document.querySelector('#progress')
 const randomSong = document.querySelector('.btn-random')
 const repeatSong = document.querySelector('.btn-repeat')
+const playlist = document.querySelector('.playlist')
 
 const app = {
     currentIndex: 0,
     isPlaying: false,
     isRandom: false,
     isRepeat: false,
+    config: {},
     //lưu trữ bài hát
     songs: [
         {
@@ -108,6 +110,10 @@ const app = {
     //     });
     // },
 
+    setConfig: function(key, value) {
+        this.config[key] = value;
+    },
+
     handleEvents: function() {
         const _this = this;
         const cdWidth = cd.offsetWidth;
@@ -154,14 +160,25 @@ const app = {
 
         // xử lý khi ấn next
         btnNext.onclick = function() {
-            _this.songNext();
+            // _this.songNext();
+            // audio.play();
+            if(_this.isRandom) {
+                _this.playRandomSong();
+            } else {
+                _this.songNext();
+            };
             audio.play();
-            
         }
 
         //xử lý khi nhấn prev
         btnPrev.onclick = function() {
-            _this.songPrev();
+            // _this.songPrev();
+            // audio.play();
+            if(_this.isRandom) {
+                _this.playRandomSong();
+            } else {
+                _this.songNext();
+            };
             audio.play();
         }
 
@@ -182,16 +199,57 @@ const app = {
 
         //xử lý khi hết bài hát
         audio.addEventListener('ended', function() {
-            _this.songNext();
+            if(_this.isRandom) {
+                _this.playRandomSong();
+                //audio.play();
+            } if(_this.isRepeat) {
+                _this.playRepeatSong();
+            } if(_this.isRandom && _this.isRepeat) {
+                _this.playRepeatSong();
+            } else {
+                _this.songNext();
+            };
             audio.play();
         })
 
         // xử lý khi ấn random
-        randomSong.onclick = function() {
-            
+        randomSong.onclick = function(e) {
+            // console.log(123);
+            _this.isRandom = !_this.isRandom;
+            _this.setConfig("isRandom", _this.isRandom);
+            randomSong.classList.toggle('active', _this.isRandom)
+        }
+
+        // xử lý khi ấn random
+        repeatSong.onclick = function(e) {
+            _this.isRepeat = !_this.isRepeat;
+            _this.setConfig("isRepeat", _this.isRepeat);
+            repeatSong.classList.toggle('active', _this.isRepeat);
         }
         
-    },
+        // click vào bài hát
+        playlist.onclick = function(e) {
+            const songNode = e.target.closest(".song:not(.active)");
+
+            if (songNode || e.target.closest(".option")) {
+            // Xử lý khi click vào song
+            // Handle when clicking on the song
+                if (songNode) {
+                    _this.currentIndex = Number(songNode.dataset.index);
+                    _this.loadCurrentSong();
+                    _this.render();
+                    audio.play();
+                }
+
+                // Xử lý khi click vào song option
+                // Handle when clicking on the song option
+                if (e.target.closest(".option")) {
+                }
+            }
+        }
+},
+        
+    
 
     defineProperties: function () {
         Object.defineProperty(this, "currentSong", {
@@ -229,15 +287,27 @@ const app = {
 
     // random bài hát
     playRandomSong: function() {
-        const randomIndex = Math.floor(Math.random() * this.songs.length);
+        // const randomIndex = Math.floor(Math.random() * this.songs.length);
+        // this.currentIndex = randomIndex;
+        // this.loadCurrentSong();
+        let randomIndex;
+        do{
+            randomIndex = Math.floor(Math.random() * this.songs.length); 
+        } while (randomIndex == this.currentIndex)
         this.currentIndex = randomIndex;
+        this.loadCurrentSong();
+    },
+
+    // lặp lại bài hát
+    playRepeatSong: function() {
+        const repeatIndex = this.currentIndex;
         this.loadCurrentSong();
     },
 
     loadConfig: function () {
         this.isRandom = this.config.isRandom;
         this.isRepeat = this.config.isRepeat;
-      },
+    },
 
     //chạy các hàm đã khởi tạo
     start: function() {
